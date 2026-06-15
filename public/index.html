@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>&#x77ED;&#x4FE1;&#x63A5;&#x7801;</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell redeem-shell">
+      <section class="glass-panel redeem-panel" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow">OAS SMS RELAY</p>
+          <h1 id="page-title">&#x7C98;&#x8D34; CDK<br />&#x67E5;&#x770B;&#x53F7;&#x7801;</h1>
+          <p class="subtitle">&#x8F93;&#x5165; CDK &#x81EA;&#x52A8;&#x5206;&#x914D;&#x53F7;&#x7801; · &#x5B9E;&#x65F6;&#x63A5;&#x6536;&#x9A8C;&#x8BC1;&#x7801;</p>
+        </div>
+
+        <form id="redeem-form" class="redeem-form" autocomplete="off">
+          <label for="code">CDK</label>
+          <div class="input-wrap combo-input">
+            <input
+              id="code"
+              name="code"
+              type="text"
+              inputmode="text"
+              placeholder="SMS-XXXX-XXXX-XXXX"
+              spellcheck="false"
+              required
+            />
+            <button class="primary-button" type="submit">
+              <span>&#x67E5;&#x770B;&#x53F7;&#x7801;</span>
+              <span class="button-icon" aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="/redeem.js"></script>
+  </body>
+</html>

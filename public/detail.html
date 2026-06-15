@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>&#x63A5;&#x7801;&#x8BE6;&#x60C5;</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell detail-shell">
+      <section class="glass-panel detail-panel" aria-labelledby="detail-title">
+        <div class="hero-copy compact">
+          <p class="eyebrow">OAS SMS RELAY</p>
+          <h1 id="detail-title">&#x63A5;&#x7801;<br />&#x8BE6;&#x60C5;</h1>
+          <p id="expires" class="subtitle">&#x4F1A;&#x8BDD;&#x52A0;&#x8F7D;&#x4E2D;</p>
+        </div>
+
+        <div class="detail-console">
+          <div class="detail-head">
+            <a class="ghost-link" href="/">&larr; &#x8FD4;&#x56DE;</a>
+            <span id="connection" class="status-pill">&#x8FDE;&#x63A5;&#x4E2D;</span>
+          </div>
+
+          <div class="phone-card">
+            <span class="label">&#x624B;&#x673A;&#x53F7;</span>
+            <strong id="phone">--</strong>
+            <button class="icon-button violet-button" type="button" data-copy="phone" aria-label="copy phone">&#x590D;&#x5236;</button>
+          </div>
+
+          <div class="code-display">
+            <span class="label">&#x9A8C;&#x8BC1;&#x7801;</span>
+            <strong id="sms-code">&#x7B49;&#x5F85;&#x4E2D;</strong>
+            <button class="icon-button violet-button" type="button" data-copy="code" aria-label="copy code">&#x590D;&#x5236;</button>
+          </div>
+
+          <div class="detail-meta">
+            <div class="stat-row">
+              <span>&#x5269;&#x4F59;</span>
+              <strong id="remaining">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>&#x72B6;&#x6001;</span>
+              <strong id="state">&#x7B49;&#x5F85;&#x77ED;&#x4FE1;</strong>
+            </div>
+          </div>
+
+          <div class="sms-box">
+            <span class="label">&#x77ED;&#x4FE1;&#x5168;&#x6587;</span>
+            <p id="sms-text">&#x6682;&#x672A;&#x6536;&#x5230;&#x77ED;&#x4FE1;&#xFF0C;&#x7CFB;&#x7EDF;&#x4F1A;&#x81EA;&#x52A8;&#x67E5;&#x8BE2;&#x3002;</p>
+          </div>
+
+          <div class="action-row">
+            <button id="poll-now" class="secondary-button" type="button">&#x7ACB;&#x5373;&#x67E5;&#x8BE2;</button>
+            <button id="change-phone" class="secondary-button danger-soft" type="button">&#x6362;&#x53F7;</button>
+          </div>
+
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="/detail.js"></script>
+  </body>
+</html>
