@@ -340,8 +340,8 @@ input::placeholder {
 .code-display strong {
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: clamp(22px, 2.2vw, 30px);
-  line-height: 1;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.1;
   font-weight: 950;
 }
 
@@ -602,8 +602,8 @@ input::placeholder {
 
 /* 验证码大号显示 */
 .code-display strong {
-  font-size: clamp(32px, 3.5vw, 44px);
-  letter-spacing: 6px;
+  font-size: clamp(28px, 3vw, 38px);
+  letter-spacing: 4px;
   background: linear-gradient(135deg, var(--violet-deep) 0%, #8177ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

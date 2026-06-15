@@ -59,7 +59,7 @@ function render(data) {
     els.smsCode.textContent = data.code || "\u5df2\u6536\u5230";
     els.smsText.textContent = data.sms || "\u77ed\u4fe1\u5df2\u6536\u5230";
     els.changePhone.disabled = true;
-    els.pollNow.disabled = true;
+    // \u4e0d\u7981\u7528\u7acb\u5373\u67e5\u8be2\u6309\u94ae\uff0c\u5141\u8bb8\u7528\u6237\u968f\u65f6\u5237\u65b0
     stopPolling();
   } else {
     els.connection.textContent = "\u7b49\u5f85\u4e2d";
