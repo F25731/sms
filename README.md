@@ -1,12 +1,10 @@
 # 短信接码网站
 
-轻量 Node 版本，前端是 iOS 玻璃拟态卡密兑换页，后端代理 SMS Relay API，避免将上游 `api_key` 暴露给浏览器。
+轻量 Node 版本，前端是 iOS 玻璃拟态卡密兑换页，后端直接代理 sms.oapi.vip 的前端接口，客户可以直接使用从原网站购买的卡密。
 
 ## 本地启动
 
 ```bash
-cp .env.example .env
-# 填写 SMS_API_KEY
 npm start
 ```
 
@@ -16,7 +14,7 @@ npm start
 
 ```bash
 docker build -t sms-glass-relay .
-docker run -d --name sms-glass-relay -p 3000:3000 -e SMS_API_KEY=sk-your-api-key sms-glass-relay
+docker run -d --name sms-glass-relay -p 3000:3000 sms-glass-relay
 ```
 
 ## 页面流程

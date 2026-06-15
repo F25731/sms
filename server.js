@@ -4,8 +4,7 @@ const { extname, join, normalize } = require("node:path");
 const { randomUUID } = require("node:crypto");
 
 const PORT = Number(process.env.PORT || 3000);
-const SMS_API_KEY = process.env.SMS_API_KEY || "";
-const SMS_BASE_URL = process.env.SMS_BASE_URL || "https://sms.oapi.vip/api.php";
+const SMS_BASE_URL = "https://sms.oapi.vip/api.php";
 const PUBLIC_DIR = join(__dirname, "public");
 const SESSION_TTL_MS = Number(process.env.SESSION_TTL_MINUTES || 30) * 60 * 1000;
 const MIN_POLL_INTERVAL_MS = Number(process.env.MIN_POLL_INTERVAL_SECONDS || 3) * 1000;
@@ -65,25 +64,16 @@ function getSession(sessionId) {
   return session;
 }
 
-async function callSmsApi(action, code) {
-  if (!SMS_API_KEY) {
-    return {
-      ok: false,
-      status: 500,
-      data: { ok: false, error: "SMS_API_KEY is not configured" }
-    };
-  }
-
+async function callSmsApi(action, body = {}) {
   const url = new URL(SMS_BASE_URL);
   url.searchParams.set("action", action);
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": SMS_API_KEY
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify({ code })
+    body: JSON.stringify(body)
   });
 
   const text = await response.text();
@@ -129,7 +119,7 @@ async function handleApi(req, res, pathname) {
         return;
       }
 
-      const upstream = await callSmsApi("open_get_phone", code);
+      const upstream = await callSmsApi("check_cdk", { code });
       if (!upstream.ok) {
         sendError(res, upstream.status || 502, upstream.data.error || "兑换失败", {
           retry_after: upstream.data.retry_after || Number(upstream.retryAfter) || undefined
@@ -137,24 +127,29 @@ async function handleApi(req, res, pathname) {
         return;
       }
 
+      const phone = upstream.data.session?.phone_number || "";
+      const smsCode = upstream.data.session?.sms_code || "";
+      const smsText = upstream.data.session?.sms_text || "";
+      const remaining = (upstream.data.cdk?.max_uses || 0) - (upstream.data.cdk?.used_count || 0);
+
       const sessionId = randomUUID();
       sessions.set(sessionId, {
         code,
-        phone: upstream.data.phone,
-        remaining: upstream.data.remaining,
+        phone,
+        remaining,
         createdAt: Date.now(),
         lastSeenAt: Date.now(),
         lastPollAt: 0,
-        completed: false,
-        sms: "",
-        smsCode: ""
+        completed: !!smsCode,
+        sms: smsText,
+        smsCode
       });
 
       json(res, 200, {
         ok: true,
         sessionId,
-        phone: upstream.data.phone,
-        remaining: upstream.data.remaining
+        phone,
+        remaining
       });
       return;
     }
@@ -194,7 +189,7 @@ async function handleApi(req, res, pathname) {
       }
 
       session.lastPollAt = now;
-      const upstream = await callSmsApi("open_get_sms", session.code);
+      const upstream = await callSmsApi("get_sms", { code: session.code });
 
       if (upstream.status === 200 && upstream.data.ok === false) {
         json(res, 200, {
@@ -216,7 +211,7 @@ async function handleApi(req, res, pathname) {
       session.completed = true;
       session.sms = upstream.data.sms || "";
       session.smsCode = upstream.data.code || "";
-      session.remaining = upstream.data.remaining;
+      session.remaining = upstream.data.remaining || session.remaining;
 
       json(res, 200, { ok: true, ...publicSession(session) });
       return;
@@ -234,7 +229,7 @@ async function handleApi(req, res, pathname) {
         return;
       }
 
-      const upstream = await callSmsApi("open_change_phone", session.code);
+      const upstream = await callSmsApi("change_phone", { code: session.code, screenshot: "" });
       if (!upstream.ok) {
         sendError(res, upstream.status || 502, upstream.data.error || "换号失败", {
           retry_after: upstream.data.retry_after || Number(upstream.retryAfter) || undefined
@@ -242,8 +237,7 @@ async function handleApi(req, res, pathname) {
         return;
       }
 
-      session.phone = upstream.data.phone;
-      session.remaining = upstream.data.remaining;
+      session.phone = upstream.data.new_phone || session.phone;
       session.lastPollAt = 0;
 
       json(res, 200, { ok: true, ...publicSession(session) });
