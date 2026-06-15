@@ -18,7 +18,7 @@ let timer = null;
 let completed = false;
 let isPolling = false;
 let isChangingPhone = false;
-let pollInterval = 3000; // \u9ed8\u8ba43\u79d2\u8f6e\u8be2
+let pollInterval = 3500;
 
 function setMessage(text, type = "") {
   els.message.textContent = text;
@@ -127,7 +127,7 @@ async function loadSession() {
 }
 
 async function pollSms(manual = false) {
-  if (!sessionId || isPolling || (completed && !manual)) return;
+  if (!sessionId || (isPolling && !manual) || (completed && !manual)) return;
 
   isPolling = true;
   if (manual) {
@@ -141,6 +141,13 @@ async function pollSms(manual = false) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sessionId, force: manual })
     });
+
+    if (!data.ok && data.retry_after) {
+      if (manual) {
+        setMessage(data.error || "\u8bf7\u7a0d\u540e\u518d\u8bd5", "error");
+      }
+      return;
+    }
 
     render(data);
 
