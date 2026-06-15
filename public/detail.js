@@ -127,7 +127,7 @@ async function loadSession() {
 }
 
 async function pollSms(manual = false) {
-  if (!sessionId || completed || isPolling) return;
+  if (!sessionId || isPolling || (completed && !manual)) return;
 
   isPolling = true;
   if (manual) {
@@ -140,7 +140,7 @@ async function pollSms(manual = false) {
     const data = await requestJson("/api/sms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId })
+      body: JSON.stringify({ sessionId, force: manual })
     });
 
     render(data);
@@ -163,7 +163,7 @@ async function pollSms(manual = false) {
     }
   } finally {
     isPolling = false;
-    if (manual && !completed) {
+    if (manual) {
       els.pollNow.disabled = false;
       els.pollNow.classList.remove("button-loading");
     }

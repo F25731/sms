@@ -175,19 +175,20 @@ async function handleApi(req, res, pathname) {
     if (pathname === "/api/sms") {
       const body = await readJson(req);
       const session = getSession(body.sessionId);
+      const force = body.force === true;
       if (!session) {
         sendError(res, 404, "会话已失效，请重新兑换");
         return;
       }
 
-      if (session.completed) {
+      if (session.completed && !force) {
         json(res, 200, { ok: true, ...publicSession(session) });
         return;
       }
 
       const now = Date.now();
       const waitMs = MIN_POLL_INTERVAL_MS - (now - session.lastPollAt);
-      if (waitMs > 0) {
+      if (waitMs > 0 && !force) {
         sendError(res, 429, "轮询太快，请稍后再试", {
           retry_after: Math.ceil(waitMs / 1000)
         });

@@ -100,8 +100,8 @@ a {
   padding: clamp(44px, 5vw, 86px) clamp(46px, 6vw, 78px);
   border-radius: 28px;
   display: grid;
-  grid-template-columns: minmax(300px, 0.66fr) minmax(500px, 1fr);
-  gap: clamp(46px, 7vw, 110px);
+  grid-template-columns: minmax(220px, 0.38fr) minmax(560px, 1fr);
+  gap: clamp(36px, 5vw, 76px);
   align-items: center;
 }
 
