@@ -47,6 +47,7 @@ function render(data) {
   completed = Boolean(data.completed || data.code);
   if (completed) {
     els.connection.textContent = "\u5df2\u6536\u5230";
+    els.connection.className = "status-badge success";
     els.state.textContent = "\u5b8c\u6210";
     els.smsCode.textContent = data.code || "\u5df2\u6536\u5230";
     els.smsText.textContent = data.sms || "\u77ed\u4fe1\u5df2\u6536\u5230";
@@ -55,6 +56,7 @@ function render(data) {
     stopPolling();
   } else {
     els.connection.textContent = "\u7b49\u5f85\u4e2d";
+    els.connection.className = "status-badge pending";
     els.state.textContent = "\u81ea\u52a8\u67e5\u8be2";
     els.smsCode.textContent = "\u7b49\u5f85\u4e2d";
     if (data.sms) els.smsText.textContent = data.sms;
@@ -102,6 +104,7 @@ async function loadSession() {
   if (!sessionId) {
     setMessage("\u7f3a\u5c11\u4f1a\u8bdd\uff0c\u8bf7\u91cd\u65b0\u5151\u6362", "error");
     els.connection.textContent = "\u672a\u8fde\u63a5";
+    els.connection.className = "status-badge";
     return;
   }
 
@@ -112,6 +115,7 @@ async function loadSession() {
   } catch (error) {
     setMessage(error.message || "\u4f1a\u8bdd\u52a0\u8f7d\u5931\u8d25", "error");
     els.connection.textContent = "\u5df2\u65ad\u5f00";
+    els.connection.className = "status-badge";
   }
 }
 
@@ -122,6 +126,7 @@ async function pollSms(manual = false) {
   if (manual) {
     setMessage("\u6b63\u5728\u67e5\u8be2...");
     els.pollNow.disabled = true;
+    els.pollNow.classList.add("button-loading");
   }
 
   try {
@@ -153,6 +158,7 @@ async function pollSms(manual = false) {
     isPolling = false;
     if (manual && !completed) {
       els.pollNow.disabled = false;
+      els.pollNow.classList.remove("button-loading");
     }
   }
 }
@@ -162,6 +168,7 @@ async function changePhone() {
 
   isChangingPhone = true;
   els.changePhone.disabled = true;
+  els.changePhone.classList.add("button-loading");
   setMessage("\u6b63\u5728\u6362\u53f7...");
 
   try {
@@ -180,6 +187,7 @@ async function changePhone() {
     setMessage(error.message || "\u6362\u53f7\u5931\u8d25", "error");
   } finally {
     isChangingPhone = false;
+    els.changePhone.classList.remove("button-loading");
     if (!completed) {
       els.changePhone.disabled = false;
     }
