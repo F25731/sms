@@ -22,6 +22,12 @@ const mimeTypes = {
   ".ico": "image/x-icon"
 };
 
+const staticCacheControl = {
+  ".html": "no-cache",
+  ".css": "no-cache",
+  ".js": "no-cache"
+};
+
 function json(res, status, payload, extraHeaders = {}) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
@@ -269,9 +275,10 @@ async function serveStatic(req, res, pathname) {
 
   try {
     const body = await readFile(filePath);
+    const extension = extname(filePath);
     res.writeHead(200, {
-      "Content-Type": mimeTypes[extname(filePath)] || "application/octet-stream",
-      "Cache-Control": "public, max-age=300"
+      "Content-Type": mimeTypes[extension] || "application/octet-stream",
+      "Cache-Control": staticCacheControl[extension] || "public, max-age=300"
     });
     res.end(body);
   } catch {
