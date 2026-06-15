@@ -16,6 +16,9 @@ const els = {
 
 let timer = null;
 let completed = false;
+let isPolling = false;
+let isChangingPhone = false;
+let pollInterval = 3000; // \u9ed8\u8ba43\u79d2\u8f6e\u8be2
 
 function setMessage(text, type = "") {
   els.message.textContent = text;
@@ -48,8 +51,8 @@ function render(data) {
     els.smsCode.textContent = data.code || "\u5df2\u6536\u5230";
     els.smsText.textContent = data.sms || "\u77ed\u4fe1\u5df2\u6536\u5230";
     els.changePhone.disabled = true;
-    clearInterval(timer);
-    timer = null;
+    els.pollNow.disabled = true;
+    stopPolling();
   } else {
     els.connection.textContent = "\u7b49\u5f85\u4e2d";
     els.state.textContent = "\u81ea\u52a8\u67e5\u8be2";
@@ -58,13 +61,41 @@ function render(data) {
   }
 }
 
-async function requestJson(url, options = {}) {
-  const response = await fetch(url, options);
-  const data = await response.json();
-  if (!response.ok && response.status !== 429) {
-    throw new Error(data.error || "\u8bf7\u6c42\u5931\u8d25");
+function stopPolling() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
   }
-  return data;
+}
+
+function startPolling() {
+  stopPolling();
+  if (!completed) {
+    pollSms();
+    timer = setInterval(() => pollSms(), pollInterval);
+  }
+}
+
+async function requestJson(url, options = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    const data = await response.json();
+    if (!response.ok && response.status !== 429) {
+      throw new Error(data.error || "\u8bf7\u6c42\u5931\u8d25");
+    }
+    return data;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
 }
 
 async function loadSession() {
@@ -85,9 +116,13 @@ async function loadSession() {
 }
 
 async function pollSms(manual = false) {
-  if (!sessionId || completed) return;
+  if (!sessionId || completed || isPolling) return;
 
-  if (manual) setMessage("\u6b63\u5728\u67e5\u8be2...");
+  isPolling = true;
+  if (manual) {
+    setMessage("\u6b63\u5728\u67e5\u8be2...");
+    els.pollNow.disabled = true;
+  }
 
   try {
     const data = await requestJson("/api/sms", {
@@ -100,19 +135,32 @@ async function pollSms(manual = false) {
 
     if (data.ok) {
       setMessage("\u9a8c\u8bc1\u7801\u5df2\u6536\u5230", "success");
+      stopPolling();
     } else if (data.pending) {
-      setMessage("\u6682\u672a\u6536\u5230\u77ed\u4fe1\uff0c\u7ee7\u7eed\u7b49\u5f85");
+      if (manual) {
+        setMessage("\u6682\u672a\u6536\u5230\u77ed\u4fe1\uff0c\u7ee7\u7eed\u7b49\u5f85");
+      }
     } else {
       setMessage(data.error || "\u6682\u672a\u6536\u5230\u77ed\u4fe1");
     }
   } catch (error) {
-    setMessage(error.message || "\u67e5\u8be2\u5931\u8d25", "error");
+    if (error.name === 'AbortError') {
+      setMessage("\u8bf7\u6c42\u8d85\u65f6\uff0c\u7ee7\u7eed\u7b49\u5f85", "error");
+    } else {
+      setMessage(error.message || "\u67e5\u8be2\u5931\u8d25", "error");
+    }
+  } finally {
+    isPolling = false;
+    if (manual && !completed) {
+      els.pollNow.disabled = false;
+    }
   }
 }
 
 async function changePhone() {
-  if (!sessionId || completed) return;
+  if (!sessionId || completed || isChangingPhone) return;
 
+  isChangingPhone = true;
   els.changePhone.disabled = true;
   setMessage("\u6b63\u5728\u6362\u53f7...");
 
@@ -125,10 +173,16 @@ async function changePhone() {
     if (!data.ok) throw new Error(data.error || "\u6362\u53f7\u5931\u8d25");
     render(data);
     setMessage("\u5df2\u66f4\u6362\u624b\u673a\u53f7", "success");
+
+    // \u6362\u53f7\u540e\u7acb\u5373\u8f6e\u8be2
+    pollSms();
   } catch (error) {
     setMessage(error.message || "\u6362\u53f7\u5931\u8d25", "error");
   } finally {
-    if (!completed) els.changePhone.disabled = false;
+    isChangingPhone = false;
+    if (!completed) {
+      els.changePhone.disabled = false;
+    }
   }
 }
 
@@ -139,12 +193,36 @@ function copyValue(type) {
     return;
   }
 
-  navigator.clipboard
-    .writeText(value)
-    .then(() => setMessage("\u5df2\u590d\u5236", "success"))
-    .catch(() => setMessage("\u590d\u5236\u5931\u8d25", "error"));
+  // \u53bb\u9664\u624b\u673a\u53f7\u7684\u56fd\u5bb6\u4ee3\u7801\u524d\u7f00\uff08\u5982\u679c\u6709\uff09
+  const cleanValue = type === "phone" ? value.replace(/^\+\d+\s*/, "") : value;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(cleanValue)
+      .then(() => setMessage("\u5df2\u590d\u5236", "success"))
+      .catch(() => fallbackCopy(cleanValue));
+  } else {
+    fallbackCopy(cleanValue);
+  }
 }
 
+function fallbackCopy(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand("copy");
+    setMessage("\u5df2\u590d\u5236", "success");
+  } catch (err) {
+    setMessage("\u590d\u5236\u5931\u8d25", "error");
+  }
+  document.body.removeChild(textarea);
+}
+
+// \u4e8b\u4ef6\u76d1\u542c
 document.querySelectorAll("[data-copy]").forEach((button) => {
   button.addEventListener("click", () => copyValue(button.dataset.copy));
 });
@@ -152,9 +230,18 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
 els.pollNow.addEventListener("click", () => pollSms(true));
 els.changePhone.addEventListener("click", changePhone);
 
+// \u9875\u9762\u53ef\u89c1\u6027\u53d8\u5316\u65f6\u7ba1\u7406\u8f6e\u8be2
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopPolling();
+  } else if (!completed) {
+    startPolling();
+  }
+});
+
+// \u521d\u59cb\u5316
 loadSession().then(() => {
   if (!completed) {
-    pollSms();
-    timer = setInterval(() => pollSms(), 3000);
+    startPolling();
   }
 });
