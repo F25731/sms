@@ -133,7 +133,6 @@ async function pollSms(manual = false) {
   if (manual) {
     setMessage("\u6b63\u5728\u67e5\u8be2...");
     els.pollNow.disabled = true;
-    els.pollNow.classList.add("button-loading");
   }
 
   try {
@@ -165,7 +164,6 @@ async function pollSms(manual = false) {
     isPolling = false;
     if (manual) {
       els.pollNow.disabled = false;
-      els.pollNow.classList.remove("button-loading");
     }
   }
 }

@@ -33,7 +33,6 @@ form.addEventListener("submit", async (event) => {
 
   isSubmitting = true;
   setButtonState(true);
-  submitButton.classList.add("button-loading");
   setMessage("\u6b63\u5728\u67e5\u770b\u53f7\u7801...");
 
   // \u6e05\u9664\u65e7\u7684session
@@ -70,7 +69,6 @@ form.addEventListener("submit", async (event) => {
     } else {
       setMessage(error.message || "\u5151\u6362\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5", "error");
     }
-    submitButton.classList.remove("button-loading");
     setButtonState(false);
     isSubmitting = false;
   }
