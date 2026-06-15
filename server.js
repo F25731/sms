@@ -140,7 +140,7 @@ async function handleApi(req, res, pathname) {
       const smsText = upstream.data.session?.sms_text || "";
       const maxUses = upstream.data.cdk?.max_uses || 0;
       const usedCount = upstream.data.cdk?.used_count || 0;
-      const remaining = maxUses === -1 ? -1 : (maxUses - usedCount);
+      const remaining = maxUses === -1 || maxUses === 0 ? 0 : (maxUses - usedCount);
 
       const sessionId = randomUUID();
       sessions.set(sessionId, {

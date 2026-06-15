@@ -29,8 +29,8 @@ function formatRemaining(data) {
   const usedCount = data.usedCount || 0;
   const maxUses = data.maxUses;
 
-  if (maxUses === -1) {
-    return `${usedCount}/\u221e`;
+  if (maxUses === -1 || maxUses === 0) {
+    return "\u267e\ufe0f";
   }
   if (maxUses === undefined || maxUses === null) {
     return "--";
