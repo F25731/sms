@@ -37,6 +37,7 @@ form.addEventListener("submit", async (event) => {
 
   // \u6e05\u9664\u65e7\u7684session
   sessionStorage.removeItem("smsSessionId");
+  sessionStorage.removeItem("smsCdk");
 
   try {
     const controller = new AbortController();
@@ -57,6 +58,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     sessionStorage.setItem("smsSessionId", data.sessionId);
+    sessionStorage.setItem("smsCdk", code);
     setMessage("\u5df2\u5206\u914d\u53f7\u7801\uff0c\u6b63\u5728\u8fdb\u5165\u8be6\u60c5", "success");
 
     // \u5ef6\u8fdf\u8df3\u8f6c\uff0c\u786e\u4fdd\u7528\u6237\u770b\u5230\u6210\u529f\u6d88\u606f

@@ -124,12 +124,21 @@ function publicSession(session) {
 }
 
 async function handleApi(req, res, pathname) {
-  if (req.method !== "POST" && pathname !== "/api/session") {
+  if (req.method !== "POST" && pathname !== "/api/session" && pathname !== "/api/health") {
     sendError(res, 405, "Method not allowed");
     return;
   }
 
   try {
+    if (pathname === "/api/health") {
+      json(res, 200, {
+        ok: true,
+        apiKeyConfigured: Boolean(SMS_API_KEY),
+        sessionCount: sessions.size
+      });
+      return;
+    }
+
     if (pathname === "/api/redeem") {
       const body = await readJson(req);
       const code = String(body.code || "").trim();
@@ -268,6 +277,7 @@ async function handleApi(req, res, pathname) {
       session.completed = false;
       session.sms = "";
       session.smsCode = "";
+      session.createdAt = Date.now();
 
       json(res, 200, { ok: true, ...publicSession(session) });
       return;

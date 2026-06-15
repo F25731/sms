@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>&#x63A5;&#x7801;&#x8BE6;&#x60C5;</title>
-    <link rel="stylesheet" href="/styles.css?v=20260615-5" />
+    <link rel="stylesheet" href="/styles.css?v=20260615-6" />
   </head>
   <body>
     <main class="shell detail-shell">
@@ -48,16 +48,37 @@
             <p id="sms-text">&#x6682;&#x672A;&#x6536;&#x5230;&#x77ED;&#x4FE1;&#xFF0C;&#x7CFB;&#x7EDF;&#x4F1A;&#x81EA;&#x52A8;&#x67E5;&#x8BE2;&#x3002;</p>
           </div>
 
+          <div class="stats-bar">
+            <div class="stat-card">
+              <span class="stat-label">&#x7B49;&#x5F85;</span>
+              <strong id="wait-elapsed" class="stat-value">00:00</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">&#x4E0B;&#x6B21;&#x67E5;&#x8BE2;</span>
+              <strong id="next-poll" class="stat-value">--</strong>
+            </div>
+            <label class="stat-card toggle-card" for="auto-change">
+              <span class="stat-label">&#x8D85;&#x65F6;&#x6362;&#x53F7;</span>
+              <span class="toggle-line">
+                <strong id="auto-change-state" class="stat-value">&#x5173;</strong>
+                <input id="auto-change" type="checkbox" />
+                <span class="toggle-switch" aria-hidden="true"></span>
+              </span>
+            </label>
+          </div>
+
           <div class="action-row">
             <button id="poll-now" class="secondary-button" type="button">&#x7ACB;&#x5373;&#x67E5;&#x8BE2;</button>
             <button id="change-phone" class="secondary-button danger-soft" type="button">&#x6362;&#x53F7;</button>
           </div>
+
+          <div id="history-list" class="history-list" aria-label="verification history"></div>
 
           <p id="message" class="message" role="status" aria-live="polite"></p>
         </div>
       </section>
     </main>
 
-    <script src="/detail.js?v=20260615-5"></script>
+    <script src="/detail.js?v=20260615-6"></script>
   </body>
 </html>
