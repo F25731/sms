@@ -25,10 +25,17 @@ function setMessage(text, type = "") {
   els.message.className = `message ${type}`.trim();
 }
 
-function formatRemaining(value) {
-  if (value === -1) return "\u65e0\u9650";
-  if (value === undefined || value === null || value === "") return "--";
-  return String(value);
+function formatRemaining(data) {
+  const usedCount = data.usedCount || 0;
+  const maxUses = data.maxUses;
+
+  if (maxUses === -1) {
+    return `${usedCount}/\u221e`;
+  }
+  if (maxUses === undefined || maxUses === null) {
+    return "--";
+  }
+  return `${usedCount}/${maxUses}`;
 }
 
 function formatExpiry(timestamp) {
@@ -41,7 +48,7 @@ function formatExpiry(timestamp) {
 
 function render(data) {
   els.phone.textContent = data.phone || "--";
-  els.remaining.textContent = formatRemaining(data.remaining);
+  els.remaining.textContent = formatRemaining(data);
   els.expires.textContent = formatExpiry(data.expiresAt);
 
   completed = Boolean(data.completed || data.code);

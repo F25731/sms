@@ -96,6 +96,8 @@ function publicSession(session) {
   return {
     phone: session.phone,
     remaining: session.remaining,
+    maxUses: session.maxUses,
+    usedCount: session.usedCount,
     completed: session.completed,
     sms: session.sms,
     code: session.smsCode,
@@ -130,13 +132,17 @@ async function handleApi(req, res, pathname) {
       const phone = upstream.data.session?.phone_number || "";
       const smsCode = upstream.data.session?.sms_code || "";
       const smsText = upstream.data.session?.sms_text || "";
-      const remaining = (upstream.data.cdk?.max_uses || 0) - (upstream.data.cdk?.used_count || 0);
+      const maxUses = upstream.data.cdk?.max_uses || 0;
+      const usedCount = upstream.data.cdk?.used_count || 0;
+      const remaining = maxUses === -1 ? -1 : (maxUses - usedCount);
 
       const sessionId = randomUUID();
       sessions.set(sessionId, {
         code,
         phone,
         remaining,
+        maxUses,
+        usedCount,
         createdAt: Date.now(),
         lastSeenAt: Date.now(),
         lastPollAt: 0,

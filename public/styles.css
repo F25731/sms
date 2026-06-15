@@ -267,12 +267,12 @@ input::placeholder {
 
 .detail-panel {
   width: min(1180px, calc(100vw - 44px));
-  min-height: 430px;
+  min-height: 0;
   margin: 0 auto;
-  padding: clamp(44px, 5vw, 76px) clamp(46px, 6vw, 78px);
+  padding: clamp(36px, 4vw, 64px) clamp(46px, 6vw, 78px);
   border-radius: 28px;
   display: grid;
-  grid-template-columns: minmax(300px, 0.58fr) minmax(560px, 1fr);
+  grid-template-columns: minmax(200px, 0.4fr) minmax(560px, 1fr);
   gap: clamp(44px, 6vw, 92px);
   align-items: center;
 }
@@ -286,7 +286,12 @@ input::placeholder {
 }
 
 .compact h1 {
-  font-size: clamp(46px, 4.3vw, 64px);
+  font-size: clamp(32px, 3.5vw, 48px);
+}
+
+.compact .subtitle {
+  margin-top: 0;
+  font-size: 16px;
 }
 
 .ghost-link,
@@ -335,7 +340,7 @@ input::placeholder {
 .code-display strong {
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: clamp(26px, 2.4vw, 36px);
+  font-size: clamp(22px, 2.2vw, 30px);
   line-height: 1;
   font-weight: 950;
 }
@@ -597,8 +602,8 @@ input::placeholder {
 
 /* 验证码大号显示 */
 .code-display strong {
-  font-size: clamp(36px, 4vw, 52px);
-  letter-spacing: 8px;
+  font-size: clamp(32px, 3.5vw, 44px);
+  letter-spacing: 6px;
   background: linear-gradient(135deg, var(--violet-deep) 0%, #8177ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
