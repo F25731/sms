@@ -29,15 +29,16 @@ docker run -d --name sms-glass-relay -p 3000:3000 sms-glass-relay
 ## 环境变量
 
 - `PORT` - 服务端口（默认3000）
+- `SMS_API_KEY` - sms.oapi.vip 管理后台创建的开放接口 API Key
 - `SESSION_TTL_MINUTES` - 会话有效期（默认30分钟）
 - `MIN_POLL_INTERVAL_SECONDS` - 最小轮询间隔（默认3秒）
 
 ## 页面流程
 
 1. 用户输入卡密并点击兑换。
-2. 服务端调用 `check_cdk` 获取手机号和状态。
+2. 服务端调用开放接口 `open_get_phone` 获取手机号。
 3. 兑换成功后跳转到 `/detail.html?session=...`。
-4. 详情页每 3 秒调用 `/api/sms` 查询验证码。
+4. 详情页轮询调用 `/api/sms`，服务端转发到 `open_get_sms` 查询验证码。
 5. 未收到时保持等待，收到后停止轮询并显示短信全文与验证码。
 6. 支持手动刷新和换号功能。
 

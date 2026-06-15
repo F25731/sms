@@ -28,6 +28,14 @@ function setMessage(text, type = "") {
 function formatRemaining(data) {
   const usedCount = data.usedCount || 0;
   const maxUses = data.maxUses;
+  const remaining = data.remaining;
+
+  if (remaining === -1 || remaining === 0) {
+    return "\u267e\ufe0f";
+  }
+  if (typeof remaining === "number") {
+    return String(remaining);
+  }
 
   if (maxUses === -1 || maxUses === 0) {
     return "\u267e\ufe0f";
